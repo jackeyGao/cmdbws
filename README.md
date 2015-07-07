@@ -2,6 +2,42 @@
 Client of cmdbuild rest service 
 
 
+## Usage
+
+```python
+from cmdbws import Cmdbws
+
+cmdb = Cmdbws('username', 'password')
+
+email = cmdb.get_class('Email')
+
+email.list()
+email.status(1)
+
+data = {
+    "username": "jackeygao",
+    "email": "gaojunqi@outlook.com"
+}
+
+id = email.create(data)
+
+data["username"] = "jackey"
+
+email.update(id, data)
+
+```
+
+## Function
+
+* 支持class card增删改查
+* 支持lookup-type 自动转换
+* 用户名密码认证
+
+## future
+
+* 暂无
+
+
 ## License
 
 The MIT License (MIT)
