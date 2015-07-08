@@ -5,8 +5,6 @@ Author: JackeyGao
 mail: junqi.gao@shuyun.com
 Created Time: 四  5/14 15:05:17 2015
 '''
-# -*- coding: utf-8 -*-
-
 from os.path import join
 import json
 import functools
