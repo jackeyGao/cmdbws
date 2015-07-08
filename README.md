@@ -6,24 +6,44 @@ Client of cmdbuild rest service
 
 ```python
 from cmdbws import Cmdbws
+from cmdbws import printj
 
-cmdb = Cmdbws('username', 'password')
+if __name__ == '__main__':
+    url = "http://example.com/services/rest/v1"
+    cmdb = Cmdbws(url, "admin", "xxxxxxxxx")
+    table = cmdb.get_class("config")
 
-email = cmdb.get_class('Email')
+    # class 信息
+    printj(table.info)
+    printj(table.attributes)
+    printj(table.lookups)
+    printj(table.references)
 
-email.list()
-email.status(1)
+    # 查询所有
+    printj(table.list())
 
-data = {
-    "username": "jackeygao",
-    "email": "gaojunqi@outlook.com"
-}
+    data = {
+            "product": "BI",
+            "srm_id": 4261,
+            "notify_method": "TICK",
+            "contacts": "junqi.gao",
+            "is_valid": True,
+            "Description": "test",
+            "leader": "junqi.gao"
+            }
+    # 增加
+    card_id = table.create(data)
+    
+    data["srm_id"] = 426
+    
+    # 更新
+    print(table.update(card_id, data))
 
-id = email.create(data)
+    # 查询单个
+    print(table.status(card_id))
 
-data["username"] = "jackey"
-
-email.update(id, data)
+    # 删除
+    print(table.delete(card_id))
 
 ```
 
@@ -31,9 +51,10 @@ email.update(id, data)
 
 * 支持class card增删改查
 * 支持lookup-type 自动转换
+* 支持reference 自动转换
 * 用户名密码认证
 
-## future
+## Future
 
 * 暂无
 

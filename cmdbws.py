@@ -12,9 +12,8 @@ import json
 import functools
 import requests
 
-version_info = (0, 5, 1)
+version_info = (0, 6, 1)
 VERSION = __version__ = '.'.join( map(str, version_info) )
-
 
 """
 Usage:
@@ -26,10 +25,6 @@ c.update(cid, data)
 c.delete(cid)
 c.status(cid)
 """
-
-
-CMDB_HOST = "http://cmdbuild.example.com/services/rest/v1"
-
 
 class CmdbwsException(Exception):
     def __init__(self, url, status_code, content):
@@ -61,9 +56,12 @@ def requests_error_handler(func):
     return deco
 
 class Cmdbws(object):
-    def __init__(self, username, password):
+    def __init__(self, url, username, password):
+        self.url = url
         self.username = username
         self.password = password
+
+        assert self.url, u'URL为空,请指定正确的URL.'
         
         # Authentication to cmdbuild
         login = self._login()
@@ -76,7 +74,7 @@ class Cmdbws(object):
 
     def _login(self, **kwargs):
         try:
-            url = "%s/sessions/" % CMDB_HOST
+            url = "%s/sessions/" % self.url
 
             data = json.dumps({"username": self.username, "password": self.password})
             login = self.request('POST', url, data=data) 
@@ -101,50 +99,70 @@ class Cmdbws(object):
 
     def request_real(self, method, url, **kwargs):
         result = self.request(method, url, **kwargs)
-        if result is not None:
+        if result:
             return result["data"]
         return result
 
     def list_class(self):
         """列出所有的class"""
-        return self.request_real("GET", join(CMDB_HOST, 'classes'))
+        return self.request_real("GET", join(self.url, 'classes'))
 
     def get_lookup_types(self):
-        return self.request_real("GET", join(CMDB_HOST, 'lookup_types'))
+        return self.request_real("GET", join(self.url, 'lookup_types'))
 
     def get_lookup_values(self, lookup_name):
-        return self.request_real("GET", join(CMDB_HOST, 'lookup_types', 
+        return self.request_real("GET", join(self.url, 'lookup_types', 
             lookup_name, 'values'))
+
+    def get_reference_values(self, class_name):
+        cls = self.get_class(class_name)
+        return cls.list()
 
 
 class CmdbClass(object):
     def __init__(self, cmdb, class_name):
         self.cmdb = cmdb
         self.class_name = class_name
-        self.url = "%s/classes/%s" % (CMDB_HOST, self.class_name)
+        self.url = "%s/classes/%s" % (self.cmdb.url, self.class_name)
 
         self.info = self.get_info()
         self.attributes = self.get_attributes()
 
-        self.lookups = [ (o["description"],o["lookupType"]) \
-                for o in self.attributes if o["lookupType"] is not None ]
+        self.lookups = self.get_lookups()
+        self.references = self.get_references()
+
+    def get_lookups(self):
+        lookups = [ (o["lookupType"], o["description"]) \
+                for o in self.attributes if o["type"] == "lookup" ]
+        values = {}
+        for lookup, key in lookups:
+            values[key] = self.cmdb.get_lookup_values(lookup)
+        return values
+
+    def get_references(self):
+        references = [ (o["targetClass"], o["description"]) \
+                for o in self.attributes if o["type"] == "reference" ]
+        values = {}
+        for reference, key in references:
+            values[key] = self.cmdb.get_reference_values(reference)
+        return values
+
+    def convert_value(self, key, value):
+        attribute = [ a for a in self.attributes if a["description"] == key ][0]
+        if 'lookup' == attribute["type"]:
+            value = [ o["_id"] for o in self.lookups[key]\
+                    if o["description"] == value ][0]
+        elif 'reference' == attribute["type"]:
+            value = [ o["_id"] for o in self.references[key]\
+                    if o["Description"] == value ][0]
+
+        return value
 
     def convert(self, data):
-        for card, lookup in self.lookups:
-            if card not in data:
-                continue
-
-            lookup_values = self.cmdb.get_lookup_values(lookup)
-            description = data[card]
-            card_id = [ i['_id'] for i in lookup_values \
-                    if description == i['description']]
-
-            if card_id is None:
-                continue
-
-            data[card] = card_id[0]
-
-        return data
+        ob = {}
+        for key, value in data.items():
+            ob[key] = self.convert_value(key, value)
+        return ob 
 
     def get_attributes(self):
         return self.cmdb.request_real("GET", join(self.url, 'attributes'))
@@ -158,14 +176,14 @@ class CmdbClass(object):
                 data=data)
 
     def status(self, cid):
-        return self.cmdb.request_real("GET", join(self.url, 'cards', cid))
+        return self.cmdb.request_real("GET", join(self.url, 'cards', str(cid)))
 
     def delete(self, cid):
-        return self.cmdb.request_real("DELETE", join(self.url, 'cards', cid))
+        return self.cmdb.request_real("DELETE", join(self.url, 'cards', str(cid)))
 
     def update(self, cid, data, convert=True):
         data = json.dumps(self.convert(data) if convert else data)
-        return self.cmdb.request_real("PUT", join(self.url, 'cards', cid), 
+        return self.cmdb.request_real("PUT", join(self.url, 'cards', str(cid)), 
                 data=data)
 
     def list(self):
