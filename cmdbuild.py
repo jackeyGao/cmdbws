@@ -7,10 +7,14 @@ Created Time: 四  5/14 15:05:17 2015
 '''
 from os.path import join
 import json
+import sys
 import functools
 import requests
 
-version_info = (0, 7, 1)
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
+version_info = (0, 7, 2)
 VERSION = __version__ = '.'.join( map(str, version_info) )
 
 """
@@ -227,13 +231,13 @@ class CmdbClass(object):
         attribute = [ a for a in self.attributes if a["description"] == key ][0]
         if 'lookup' == attribute["type"]:
             values = [ o["_id"] for o in self.lookups[key]\
-                    if o["description"] == value ]
+                    if o["description"] == value.encode("utf-8") ]
 
             if values:
                 value = values[0]
         elif 'reference' == attribute["type"]:
             values = [ o["_id"] for o in self.references[key]\
-                    if o["Description"] == value ]
+                    if o["Description"] == value.encode("utf-8") ]
             if values:
                 value = values[0]
 
