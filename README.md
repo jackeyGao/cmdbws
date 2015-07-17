@@ -5,12 +5,12 @@ Client of cmdbuild rest service
 ## Usage
 
 ```python
-from cmdbws import Cmdbws
-from cmdbws import printj
+from cmdbuild import Cmdbuild
+from cmdbuild import printj
 
 if __name__ == '__main__':
     url = "http://example.com/services/rest/v1"
-    cmdb = Cmdbws(url, "admin", "xxxxxxxxx")
+    cmdb = Cmdbuild(url, "admin", "xxxxxxxxx")
     table = cmdb.get_class("config")
 
     # class 信息
