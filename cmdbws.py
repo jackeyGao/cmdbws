@@ -54,7 +54,17 @@ def requests_error_handler(func):
     return deco
 
 class Cmdbws(object):
+    
+    """
+    Cmdbuild rest services 用户接口, 客户端可以使用此接口获取Cmdbuild Class对象
+    可以使用``get_class()``获取一个class(类似于table)对象。 
+    使用``list_class()``获得所有的class列表.当获得class对象之后， 你可以使用他的
+    一些方法操作card， 具体方法请参照 somemodule_. 。
+    """
     def __init__(self, url, username, password):
+        """构造一个cmdb 实例
+        必须接受三个参数， 才能正常工作。
+        """
         self.url = url
         self.username = username
         self.password = password
@@ -68,6 +78,13 @@ class Cmdbws(object):
         self.availableRoles = login["data"]["availableRoles"]
 
     def get_class(self, class_name):
+        """
+        获取一个class 实例， 此方法就是获取需要操作的表的方法， 需要传递表名参数.
+        ``class_name``为class的name。 就是cmdbuild的类似于表名的概念.
+
+        :param class_name: 需要操作的class(表)名字
+        :rtype: Cmdb Class 实例
+        """
         return CmdbClass(self, class_name)
 
     def _login(self, **kwargs):
@@ -102,22 +119,43 @@ class Cmdbws(object):
         return result
 
     def list_class(self):
-        """列出所有的class"""
+        """
+        列出所有的class
+
+        :rtype: class list 字典数据
+        """
         return self.request_real("GET", join(self.url, 'classes'))
 
     def get_lookup_types(self):
+        """
+        获取所有Lookup Types
+
+        :rtype: dict
+        """
         return self.request_real("GET", join(self.url, 'lookup_types'))
 
     def get_lookup_values(self, lookup_name):
+        """
+        获取单个Lookup Types所有value值.
+        :rtype: dict
+        """
         return self.request_real("GET", join(self.url, 'lookup_types', 
             lookup_name, 'values'))
 
     def get_reference_values(self, class_name):
+        """
+        获取单个Reference所有对应值
+        :rtype: dict
+        """
         cls = self.get_class(class_name)
         return cls.list()
 
 
 class CmdbClass(object):
+    """
+    Cmdb Calss 对象， 使用此对象操作card数据， 在我们认为card数据为字典对象， 键值对应数据库的数据值.
+    
+    """
     def __init__(self, cmdb, class_name):
         self.cmdb = cmdb
         self.class_name = class_name
@@ -163,28 +201,61 @@ class CmdbClass(object):
         return ob 
 
     def get_attributes(self):
+        """
+        获取此classes所有属性
+        :rtype: dict
+        """
         return self.cmdb.request_real("GET", join(self.url, 'attributes'))
 
     def get_info(self):
+        """
+        获取此classes所有信息
+        :rtype: dict
+        """
         return self.cmdb.request_real("GET", self.url)
 
     def create(self, data, convert=True):
+        """
+        创建一条数据
+        :param data: 创建条目数据字典
+        :param convert: 是否进行convert转换,默认为True
+        :rtype: dict
+        """
         data = json.dumps(self.convert(data) if convert else data)
         return self.cmdb.request_real("POST", join(self.url, 'cards'), 
                 data=data)
 
     def status(self, cid):
+        """
+        获取单条数据内容
+        :rtype: dict
+        """
         return self.cmdb.request_real("GET", join(self.url, 'cards', str(cid)))
 
     def delete(self, cid):
+        """
+        获取单条数据内容
+        :rtype: None
+        """
         return self.cmdb.request_real("DELETE", join(self.url, 'cards', str(cid)))
 
     def update(self, cid, data, convert=True):
+        """
+        修改一条数据
+        :param cid: 需要进行更新的card id
+        :param data: 创建条目数据字典
+        :param convert: 是否进行convert转换,默认为True
+        :rtype: dict
+        """
         data = json.dumps(self.convert(data) if convert else data)
         return self.cmdb.request_real("PUT", join(self.url, 'cards', str(cid)), 
                 data=data)
 
     def list(self):
+        """
+        获取所有数据条目
+        :rtype: list
+        """
         return self.cmdb.request_real("GET", join(self.url, 'cards'))
 
 def printj(data):
