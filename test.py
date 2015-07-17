@@ -6,22 +6,27 @@ mail: junqi.gao@shuyun.com
 Created Time: 一  7/ 6 17:40:15 2015
 '''
 
-from cmdbws import Cmdbws
-from cmdbws import printj
+from cmdbuild import Cmdbuild
+from cmdbuild import fj
 
 if __name__ == '__main__':
-    url = "http://cmdb.example.com/services/rest/v1"
-    cmdb = Cmdbws(url, "admin", "xxxxxxxxx")
+    url = "http://cmdb.yunat.com/services/rest/v1"
+    cmdb = Cmdbuild(url, "admin", "huaat123")
     table = cmdb.get_class("config")
 
     # class 信息
-    printj(table.info)
-    printj(table.attributes)
-    printj(table.lookups)
-    printj(table.references)
+    print fj(table.info)
+    print fj(table.attributes)
+    print fj(table.lookups)
+    print fj(table.references)
 
+
+
+    for i in table.attributes:
+        print i["name"], i["type"]
+#    exit()
     # 查询所有
-    printj(table.list())
+#    printj(table.list())
 
     data = {
             "product": "BI",
@@ -34,6 +39,8 @@ if __name__ == '__main__':
             }
     # 增加
     card_id = table.create(data)
+    print card_id
+    exit()
     
     data["srm_id"] = 426
     

@@ -8,7 +8,7 @@ Created Time: 四  5/14 17:04:52 2015
 import os
 import sys
 from setuptools import setup
-from cmdbws import VERSION
+from cmdbuild import VERSION
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload -r internal')
@@ -23,7 +23,7 @@ setup(
     name = 'cmdbws',
     version = VERSION,
     install_requires = ['requests'],
-    py_modules = ['cmdbws'],
+    py_modules = ['cmdbuild'],
     author = 'JackeyGao',
     author_email = 'junqi.gao@shuyun.com',
     url = 'http://git.yunat.com/projects/OPS/repos/cmws/browse',
@@ -34,5 +34,7 @@ setup(
         'Topic :: Internet',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python 2.6',
+        'Programming Language :: Python 2.7',
     ],
 )
