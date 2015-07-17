@@ -10,8 +10,8 @@ from cmdbuild import Cmdbuild
 from cmdbuild import fj
 
 if __name__ == '__main__':
-    url = "http://cmdb.yunat.com/services/rest/v1"
-    cmdb = Cmdbuild(url, "admin", "huaat123")
+    url = "http://xxxxxxxx/services/rest/v1"
+    cmdb = Cmdbuild(url, "admin", "sdfasdfsd")
     table = cmdb.get_class("config")
 
     # class 信息
