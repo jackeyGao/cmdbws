@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Cmdbws by jackeyGao</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Cmdbws</h1>
+        <h2>cmdbuild 官方接口客户端</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/jackeyGao/cmdbws/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/jackeyGao/cmdbws/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/jackeyGao/cmdbws" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="cmdbws" class="anchor" href="#cmdbws" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>cmdbws</h1>
+
+<p>cmdbuild 官方接口客户端</p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">from</span> cmdbuild <span class="pl-k">import</span> Cmdbuild
+<span class="pl-k">from</span> cmdbuild <span class="pl-k">import</span> printj
+
+<span class="pl-k">if</span> <span class="pl-c1">__name__</span> <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">'</span>__main__<span class="pl-pds">'</span></span>:
+    url <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>http://example.com/services/rest/v1<span class="pl-pds">"</span></span>
+    cmdb <span class="pl-k">=</span> Cmdbuild(url, <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>xxxxxxxxx<span class="pl-pds">"</span></span>)
+    table <span class="pl-k">=</span> cmdb.get_class(<span class="pl-s"><span class="pl-pds">"</span>config<span class="pl-pds">"</span></span>)
+
+    <span class="pl-c"># class 信息</span>
+    printj(table.info)
+    printj(table.attributes)
+    printj(table.lookups)
+    printj(table.references)
+
+    <span class="pl-c"># 查询所有</span>
+    printj(table.list())
+
+    data <span class="pl-k">=</span> {
+            <span class="pl-s"><span class="pl-pds">"</span>product<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>BI<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>srm_id<span class="pl-pds">"</span></span>: <span class="pl-c1">4261</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>notify_method<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>TICK<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>contacts<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>junqi.gao<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>is_valid<span class="pl-pds">"</span></span>: <span class="pl-c1">True</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>Description<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>test<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>leader<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>junqi.gao<span class="pl-pds">"</span></span>
+            }
+    <span class="pl-c"># 增加</span>
+    card_id <span class="pl-k">=</span> table.create(data)
+
+    data[<span class="pl-s"><span class="pl-pds">"</span>srm_id<span class="pl-pds">"</span></span>] <span class="pl-k">=</span> <span class="pl-c1">426</span>
+
+    <span class="pl-c"># 更新</span>
+    <span class="pl-c1">print</span>(table.update(card_id, data))
+
+    <span class="pl-c"># 查询单个</span>
+    <span class="pl-c1">print</span>(table.status(card_id))
+
+    <span class="pl-c"># 删除</span>
+    <span class="pl-c1">print</span>(table.delete(card_id))
+</pre></div>
+
+<h2>
+<a id="function" class="anchor" href="#function" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Function</h2>
+
+<ul>
+<li>支持class card增删改查</li>
+<li>支持lookup-type 自动转换</li>
+<li>支持reference 自动转换</li>
+<li>用户名密码认证</li>
+</ul>
+
+<h2>
+<a id="future" class="anchor" href="#future" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Future</h2>
+
+<ul>
+<li>暂无</li>
+</ul>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<p>The MIT License (MIT)</p>
+
+<p>Copyright (c) 2015 JackeyGao</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
